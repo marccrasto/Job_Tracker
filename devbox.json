@@ -1,0 +1,9 @@
+{
+    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.15.0/.schema/devbox.schema.json",
+    "packages": ["nodejs@22", "postgresql_16", "go-task", "act"],
+    "shell": {
+        "init_hook": [
+        "echo \"Node $(node -v) ready. Run 'task --list' to see commands.\""
+        ]
+    }
+}

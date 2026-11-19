@@ -1,0 +1,51 @@
+version: '3'
+
+tasks:
+  setup:
+    desc: Install dependencies and create .env
+    cmds:
+      - npm install
+      - cp -n .env.example .env || true
+
+  db:start:
+    desc: Start local Postgres in Docker
+    cmds:
+      - docker start jobtracker-db 2>/dev/null || docker run -d --name jobtracker-db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=jobtracker postgres:16
+
+  db:stop:
+    desc: Stop local Postgres
+    cmds:
+      - docker stop jobtracker-db
+
+  db:init:
+    desc: Create the database tables
+    deps: [db:start]
+    cmds:
+      - npm run db:init
+
+  dev:
+    desc: Run the app with auto-restart
+    deps: [db:start]
+    cmds:
+      - npm run dev
+
+  test:
+    desc: Run the test suite
+    cmds:
+      - npm test
+
+  lint:
+    desc: Run ESLint
+    cmds:
+      - npm run lint
+
+  check:
+    desc: Lint and test, same as CI
+    cmds:
+      - task: lint
+      - task: test
+
+  ci:
+    desc: Run the GitHub Actions workflow locally with act
+    cmds:
+      - act

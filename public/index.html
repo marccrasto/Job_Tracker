@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Job Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <h1>Job tracker</h1>
+      <p class="sub">Every application, one place.</p>
+    </header>
+
+    <main>
+      <section class="stats" aria-label="Summary">
+        <div class="stat"><span class="num" id="stat-total">–</span><span class="label">Total</span></div>
+        <div class="stat"><span class="num" id="stat-applied">–</span><span class="label">Applied</span></div>
+        <div class="stat"><span class="num" id="stat-interview">–</span><span class="label">Interview</span></div>
+        <div class="stat"><span class="num" id="stat-offer">–</span><span class="label">Offer</span></div>
+        <div class="stat"><span class="num" id="stat-rejected">–</span><span class="label">Rejected</span></div>
+      </section>
+
+      <section class="card">
+        <h2>Add an application</h2>
+        <form id="add-form" novalidate>
+          <div class="grid">
+            <label>Company<input name="company" required maxlength="200" /></label>
+            <label>Role<input name="role" required maxlength="200" /></label>
+            <label>Applied on<input name="applied_on" type="date" /></label>
+            <label>Status
+              <select name="status">
+                <option value="applied">Applied</option>
+                <option value="interview">Interview</option>
+                <option value="offer">Offer</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </label>
+            <label class="wide">Posting link<input name="link" type="url" placeholder="https://" /></label>
+            <label class="wide">Notes<textarea name="notes" rows="2"></textarea></label>
+          </div>
+          <p class="error" id="form-error" role="alert"></p>
+          <button type="submit">Add application</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="list-head">
+          <h2>Applications</h2>
+          <label class="filter">Show
+            <select id="status-filter">
+              <option value="">All</option>
+              <option value="applied">Applied</option>
+              <option value="interview">Interview</option>
+              <option value="offer">Offer</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </label>
+        </div>
+        <p class="error" id="list-error" role="alert"></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Company</th><th>Role</th><th>Applied</th><th>Status</th><th>Notes</th><th></th></tr>
+            </thead>
+            <tbody id="app-rows"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="empty-state" hidden>No applications yet. Add your first one above.</p>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
