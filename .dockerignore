@@ -1,0 +1,11 @@
+# Ignore everything in the build context
+**
+
+# Allow what is needed
+!db/
+!public/
+!src/
+!package*.json
+
+# This has to come after the allowlist because there are still some zone identifier files in each of these folders
+**/*:Zone.Identifier
