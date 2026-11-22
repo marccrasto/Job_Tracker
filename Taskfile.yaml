@@ -8,14 +8,14 @@ tasks:
       - cp -n .env.example .env || true
 
   db:start:
-    desc: Start local Postgres in Docker
+    desc: Start the compose database and wait till it's healthy
     cmds:
-      - docker start jobtracker-db 2>/dev/null || docker run -d --name jobtracker-db -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=jobtracker postgres:16
+      - docker compose up -d --wait database
 
   db:stop:
-    desc: Stop local Postgres
+    desc: Stop the compose database (data is kept)
     cmds:
-      - docker stop jobtracker-db
+      - docker compose stop database
 
   db:init:
     desc: Create the database tables
@@ -45,7 +45,17 @@ tasks:
       - task: lint
       - task: test
 
-  ci:
-    desc: Run the GitHub Actions workflow locally with act
+  install-ci:
+    desc: Clean install from package-lock.json (used by CI)
     cmds:
-      - act
+      - npm ci
+
+  up:
+    desc: Run the whole stack (app + database) in Docker
+    cmds:
+      - docker compose up --build
+
+  down:
+    desc: Stop and remove the stack's containers (data is kept)
+    cmds:
+      - docker compose down

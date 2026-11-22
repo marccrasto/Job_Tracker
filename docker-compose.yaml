@@ -9,13 +9,15 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: jobtracker
     # Only add a ports mapping to your database service during local development if you need to connect to it from outside the Docker network (from machine, browser, etc.). Containers (inside Docker Network) can reach each other without 'ports'
-    #ports:
-    #  - "5432:5432"
+    ports:
+        # This is added because task dev in the taskfile will try to run the app locally (without container) which will try to connect to the database that is running within the container (look at taskfile.yaml to see setup)
+        # The 127.0.0.... mapping ensures that only connections from local machine are accepted. Without it, anyone within the same network (cafe wifi, library wifi, home network) can possibly access it
+      - "127.0.0.1:5432:5432"
     volumes:
       # Named Volume: db_data is the named volume on the host_filesystem and can be found at /var/lib/postgresql/data in the container
       # The volume holds the actual jobtracker database with the user and password config and the applications table and rows
       - db_data:/var/lib/postgresql/data
-      # Bind Mount: ./db/schema.sql is the path on our project folder and /docker-entrypoint-initdb.d/schema.sql:ro is the path on the container. Any changes to the state of our host path will be reflected in the container
+      # Bind Mount: ./db/schema.sql is the path on our project folder and /docker-entrypoint-initdb.d/schema.sql is the path on the container (:ro is read only). Any changes to the state of our host path will be reflected in the container
       # The bind mount will hold the instructions (any changes to this reflects in the container and should be read only). It’s the schema.sql file: the CREATE TABLE statements describing what the applications table should look like.
       # The nuance is that schema.sql is only a recipe. On the first start, Postgres reads it once and builds the table, and from then on the table, structure included, lives in the volume. After that, the bind-mounted file isn’t used at all. The mount can be removed and the app would carry on working, because the table already exists in the volume.
       # That’s also why editing schema.sql later doesn’t change the existing table. The recipe only runs when the volume is empty. To apply a changed schema locally, wipe the volume (docker compose down -v, which deletes the data, and then run docker compose again) or run the change with ALTER TABLE. Real projects handle this with migrations: numbered SQL files that apply changes step by step (eg. migrations/000001_create_users_table.up.sql).
