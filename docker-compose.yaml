@@ -1,0 +1,51 @@
+services:
+  # This service name actually resolves to an address. Compose then puts every service on a shared network and lets them find each other by service name
+  # The 'environment:' block in frontend_backend service tells the app where to connect. DB_HOST: database points it at that name
+  database:
+    image: postgres:16
+    environment:
+      # All these environment variables are part of the standard format for postgres image
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobtracker
+    # Only add a ports mapping to your database service during local development if you need to connect to it from outside the Docker network (from machine, browser, etc.). Containers (inside Docker Network) can reach each other without 'ports'
+    #ports:
+    #  - "5432:5432"
+    volumes:
+      # Named Volume: db_data is the named volume on the host_filesystem and can be found at /var/lib/postgresql/data in the container
+      # The volume holds the actual jobtracker database with the user and password config and the applications table and rows
+      - db_data:/var/lib/postgresql/data
+      # Bind Mount: ./db/schema.sql is the path on our project folder and /docker-entrypoint-initdb.d/schema.sql:ro is the path on the container. Any changes to the state of our host path will be reflected in the container
+      # The bind mount will hold the instructions (any changes to this reflects in the container and should be read only). It’s the schema.sql file: the CREATE TABLE statements describing what the applications table should look like.
+      # The nuance is that schema.sql is only a recipe. On the first start, Postgres reads it once and builds the table, and from then on the table, structure included, lives in the volume. After that, the bind-mounted file isn’t used at all. The mount can be removed and the app would carry on working, because the table already exists in the volume.
+      # That’s also why editing schema.sql later doesn’t change the existing table. The recipe only runs when the volume is empty. To apply a changed schema locally, wipe the volume (docker compose down -v, which deletes the data, and then run docker compose again) or run the change with ALTER TABLE. Real projects handle this with migrations: numbered SQL files that apply changes step by step (eg. migrations/000001_create_users_table.up.sql).
+      # So here's the flow, postgres image has a starting script (docker-entrypoint.sh) that looks at the data directory (/var/lib/postgresql/data although different versions might have different directories but these directories are where your data should live). If there is database, skips setup and starts postgres (hence why changing sql file doesn't reflect until volume is empty). If no database, use environment variables to build database. Then looks at /docker-entrypoint-initdb.d/ to search for any sql file there and run them to build the tables
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      # Returns 0 if database is accepting connections, not 0 (1 - rejecting connections, 2 - no response, 3 - no attempt made) as failed. This is then sent to app container. Docker runs pg_isready 10 times every 5 seconds before deeming it unhealthy if no 0 was returned in any of the tests. As soon as one 0 is returned, container is deemed as healthy
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jobtracker"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  frontend_backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Similar to .env file. Format does depend on how db.js is set up (if it uses URL, then use URL format here)
+      # The only thing that changes is DB_HOST. On the machine it’s localhost (through the published port). Inside the compose network it’s the service name (database).
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: jobtracker
+      # The quotes are used to stop yaml parsing from treating this as a boolean
+      DB_SSL: "false"
+    depends_on:
+      database:
+        # This means to not start the app container until the database container is up and running. It is waiting for database container to return a boolean (0 - passed, not 0 - failed). This is where pg_isready comes in 
+        condition: service_healthy
+
+volumes:
+  db_data:
