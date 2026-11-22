@@ -15,6 +15,7 @@ WORKDIR /usr/src/app
 # So in this case, we copied package.json files and running npm ci first. This is because they are expensive steps and it's better to have them cached as they will most likely change the least
 # Caching pays off with expensive steps, and in this project that’s npm ci, which downloads and installs every package. That’s the one you want to protect: copy package.json and package-lock.json, then run npm ci, then copy code
 # The general rule is: things that change least go first.
+# npm ci is the same as npm install except it installs using package-lock.json and has a few differences (--omit=dev means to omit dev dependencies - lint, jest, etc.)
 
 COPY package*.json ./
 RUN npm ci --omit=dev
