@@ -1,0 +1,50 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - main
+    # paths adds a second condition to the push trigger. The workflow runs on a push to main only if at least one file changed in that push matches the pattern. src/** means "anything inside src/, at any depth". branches and paths are combined with AND
+    paths:
+      - src/**
+      - public/**
+      - tests/**
+      - package*.json
+      - eslint.config.js
+      - .github/workflows/test.yaml
+
+  # Push to any other branch doesn't trigger workflow. Opening a PR triggers workflow and any push to that branch while PR is open triggers workflow as well. Then merging PR is counted as push to main and triggers workflow (provided changes are made to files matching path patterns)
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-node-service:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v7
+        with:
+          # Usually would use 'node-version-file: package.json' which states >=20 so we'll end up with the latest one but because we use 22 in Devbox and Dockerfile, we set it directly
+          node-version: 22
+          # This tells setup-node to save npm's downloaded packages between workflow runs, so later runs don't have to download everything again. Every workflow run starts on a brand-new, empty virtual machine. Without caching, npm ci downloads every package from the npm registry on every single run. With caching, it checks whether a saved cache exists and restores it into npm's cache folder (~/.npm). It then installs from that local cache instead of downloading
+          cache: "npm"
+          # Only use this lines if package-lock.json sits in a folder that is not the root
+          # cache-dependency-path: package-lock.json
+
+      - name: Setup Task for the VM/Runner
+        uses: supplypike/setup-bin@v5
+        with:
+          uri: 'https://github.com/go-task/task/releases/download/v3.54.0/task_linux_amd64.tar.gz'
+          name: 'task'
+          version: 'v3.54.0'
+      
+      - name: Install Node Dependencies
+        run: |
+          task install-ci
+      
+      - name: Run Tests
+        run: |
+          task check

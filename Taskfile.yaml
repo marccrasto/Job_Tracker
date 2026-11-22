@@ -32,6 +32,7 @@ tasks:
   test:
     desc: Run the test suite
     cmds:
+      # npm test is shorthand for npm run test. Whenever 'run' is there, it is a keyword for running the script found in package.json
       - npm test
 
   lint:

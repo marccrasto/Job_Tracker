@@ -1,0 +1,21 @@
+version: "3"
+
+env:
+  GITHUB_TOKEN:
+    # Requires the GitHub CLI: 'devbox add gh', then log in once with 'gh auth login'
+    sh: gh auth token
+
+tasks:
+  trigger-workflow:
+    desc: Trigger GitHub Actions workflow_dispatch event using ACT
+    # {{.PWD}} comes from your shell and is the folder you ran task from. That's only correct if you cd into .github/workflows/test first. {{.TASKFILE_DIR}} is always the folder containing this Taskfile, wherever you run it from
+    # --directory ../../.. tells act which folder is the root of your repository. Act needs it because it begins its search for all the files required for the workflow from this directory (the workflow file itself, the checkout code command that will replicate the everything from the root to the vm, etc.)
+    cmds:
+      - |
+        act workflow_dispatch \
+          --container-architecture linux/amd64 \
+          -s GITHUB_TOKEN="{{.GITHUB_TOKEN}}" \
+          -e {{.TASKFILE_DIR}}/event.json \
+          -P ubuntu-24.04=catthehacker/ubuntu:act-22.04 \
+          --directory ../../.. \
+          -W .github/workflows/test.yaml

@@ -3,11 +3,67 @@
   "packages": {
     "act": {
       "resolved": "github:NixOS/nixpkgs/2074cc672349f14240fb7ea90d509e0b643e9dd4?narHash=sha256-E0hYoioqUtM2XmPPvYYpJgdADF5AW9oOoPSEiM9dTHQ%3D#act",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "path": "/nix/store/71l1m3fcsh1y3yjiz9k89k2jfy1y4n0l-act-0.2.97",
+              "default": true
+            }
+          ]
+        }
+      }
+    },
+    "gh@latest": {
+      "last_modified": "2026-11-21T08:18:15Z",
+      "resolved": "github:NixOS/nixpkgs/93a9ed0a866099a230ed5146a5bb7d16fd5c9b14#gh",
+      "source": "devbox-search",
+      "version": "2.105.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2n1hbyyl4xrii9w6n94czapavlrmxaqw-gh-2.105.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2n1hbyyl4xrii9w6n94czapavlrmxaqw-gh-2.105.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/848yrqribzhfjyaws9g7z7x0kdr8qf1j-gh-2.105.0",
+              "default": true
+            },
+            {
+              "name": "debug",
+              "path": "/nix/store/vsqrsgih8qslq4vfl9s2hzsnq9bararq-gh-2.105.0-debug"
+            }
+          ],
+          "store_path": "/nix/store/848yrqribzhfjyaws9g7z7x0kdr8qf1j-gh-2.105.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3lvq7zi7nqalfwk1b3l8bw2wy72ffg8m-gh-2.105.0",
+              "default": true
+            },
+            {
+              "name": "debug",
+              "path": "/nix/store/gfd72r5afa7kldjcj4xa3lxxxny9lf53-gh-2.105.0-debug"
+            }
+          ],
+          "store_path": "/nix/store/3lvq7zi7nqalfwk1b3l8bw2wy72ffg8m-gh-2.105.0"
+        }
+      }
     },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2026-11-12T14:50:34Z",
-      "resolved": "github:NixOS/nixpkgs/2074cc672349f14240fb7ea90d509e0b643e9dd4?lastModified=1794495034&narHash=sha256-E0hYoioqUtM2XmPPvYYpJgdADF5AW9oOoPSEiM9dTHQ%3D"
+      "last_modified": "2026-11-21T08:18:15Z",
+      "resolved": "github:NixOS/nixpkgs/93a9ed0a866099a230ed5146a5bb7d16fd5c9b14?lastModified=1795249095&narHash=sha256-8JDgyVvWUZg5m9hNlL8Ge9aT647ng3Ukc8NPMiKNTPQ%3D"
     },
     "glibcLocales@latest": {
       "last_modified": "2026-11-12T14:50:34Z",
@@ -39,7 +95,17 @@
     },
     "go-task": {
       "resolved": "github:NixOS/nixpkgs/2074cc672349f14240fb7ea90d509e0b643e9dd4?narHash=sha256-E0hYoioqUtM2XmPPvYYpJgdADF5AW9oOoPSEiM9dTHQ%3D#go-task",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "path": "/nix/store/r4j6r76czbmqqyslbpzcwbpqllg4cpf1-go-task-3.53.1",
+              "default": true
+            }
+          ]
+        }
+      }
     },
     "nodejs@22": {
       "last_modified": "2026-11-12T14:50:34Z",
@@ -83,7 +149,22 @@
     "postgresql_16": {
       "plugin_version": "0.0.2",
       "resolved": "github:NixOS/nixpkgs/2074cc672349f14240fb7ea90d509e0b643e9dd4?narHash=sha256-E0hYoioqUtM2XmPPvYYpJgdADF5AW9oOoPSEiM9dTHQ%3D#postgresql_16",
-      "source": "nixpkg"
+      "source": "nixpkg",
+      "systems": {
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "path": "/nix/store/afsi4779hcmrswsifi16mczwy3w8vhsz-postgresql-16.16",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/s95z49izwlgs6p6s3mcbxligl3m0xy4l-postgresql-16.16-man",
+              "default": true
+            }
+          ]
+        }
+      }
     }
   }
 }
