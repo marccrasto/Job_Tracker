@@ -1,0 +1,62 @@
+name: Build and Push Container Images
+
+on:
+  push:
+    branches: 
+      - main
+
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - src/**
+      - package*.json
+      - db/**
+      - public/**
+      - .github/workflows/build-push.yaml
+
+  workflow_dispatch:
+
+jobs:
+  build-push-container-images:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        # Don't require fetch-depth because we are not using 'git describe' to compute our tags. 'git describe' can see the history and tags.
+        # with:
+          # fetch-depth: 0
+        
+      # Not required because we will not be using task to compute image tag
+      # - name: Setup Task for the VM/Runner
+      #   uses: supplypike/setup-bin@v5
+      #   with:
+      #     uri: 'https://github.com/go-task/task/releases/download/v3.54.0/task_linux_amd64.tar.gz'
+      #     name: 'task'
+      #     version: 'v3.54.0'
+      
+      - name: Login to Docker
+        if: ${{ !env.ACT }}
+        uses: docker/login-action@v4
+        with:
+          # Should be stored under repo variables and secrets
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v7
+        with:
+          # Tells Docker where to find the Dockerfile and the local files it needs to copy (build context).
+          context: .
+          # Don't push if using ACT. However, this step will build the image
+          push: ${{ !env.ACT }}
+          # It builds one image and pushes it under both names. They aren't two copies, just two labels on the same image. Each run builds one image, pushes it to Docker Hub under its SHA tag, and moves latest to point at it. The older images aren't replaced or deleted. They stay on Docker Hub under their own SHA tags, and only the latest label moves.
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/job-tracker:${{ github.sha }}
+            ${{ vars.DOCKERHUB_USERNAME }}/job-tracker:latest
+          # This stores Docker's layer cache in GitHub's cache, so unchanged layers like npm ci layer don't rebuild every time
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

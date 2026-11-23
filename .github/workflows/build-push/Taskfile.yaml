@@ -1,0 +1,22 @@
+version: "3"
+
+env:
+  GITHUB_TOKEN:
+    sh: gh auth token
+
+tasks:
+  trigger-workflow:
+    desc: Trigger GitHub Actions workflow_dispatch event using ACT
+
+    # --var ... is needed because the build step in build-push.yaml (vars.DOCKERHUB_USERNAME) uses it. ACT cannot access the GITHUB variables directly so we pass it in ourselves. Same goes for secrets
+    # -s stands for 'secrets' can be used to pass in a secret as ACT cannot directly obtain the secret from GitHub. The secrets.GITHUB_TOKEN might not explicitly be used in the workflows but it is used in the backgrounds. For all the actions in our workflows (checkout, docker/login-action), ACT uses the secret for downloading (ACT can work without it, but it will be rate-limited). Moreover, a lot of the actions use the token (checkout for example) use the token as an input (see their setup)
+    cmds:
+      - |
+        act workflow_dispatch \
+          --container-architecture linux/amd64 \
+          -s GITHUB_TOKEN="{{.GITHUB_TOKEN}}" \
+          -e {{.TASKFILE_DIR}}/event.json \
+          -P ubuntu-24.04=catthehacker/ubuntu:act-22.04 \
+          --directory ../../.. \
+          -W .github/workflows/build-push.yaml \
+          --var DOCKERHUB_USERNAME=marcalex458
