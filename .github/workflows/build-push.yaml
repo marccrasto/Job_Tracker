@@ -16,6 +16,11 @@ on:
 
   workflow_dispatch:
 
+# Gives the workflow permission to start another workflow
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   build-push-container-images:
     runs-on: ubuntu-24.04
@@ -60,3 +65,12 @@ jobs:
           # This stores Docker's layer cache in GitHub's cache, so unchanged layers like npm ci layer don't rebuild every time
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      
+      - name: Trigger Deploy
+        if: ${{ !env.ACT }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Automatically triggers a workflow dispatch event 
+        run: |
+          gh workflow run deploy.yaml \
+            -f version=${{ github.sha }}
