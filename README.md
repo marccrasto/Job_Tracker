@@ -32,29 +32,10 @@ job-tracker/
 
 ## Your tasks
 
-Search the code for `YOUR CODE GOES HERE`. Each one explains the goal and
-gives hints.
-
-**Backend (Node/Express)**
-1. `src/routes/applications.js`: `PATCH /api/applications/:id` (update status)
-2. `src/routes/stats.js`: `GET /api/stats` (counts per status)
-
-**Frontend (JavaScript)**
-3. `public/app.js`: `renderStats()`, fill in the stat cards
-4. `public/app.js`: `updateStatus()`, save a status change via your PATCH route
-5. `public/app.js`: the "Show" filter dropdown
-
-**Tests**
-6. `tests/app.test.js`: turn the `it.todo(...)` lines into real tests
-
 **DevOps (written entirely by you, then reviewed)**
-7. `Dockerfile` (and a `.dockerignore`)
-8. `docker-compose.yml` with the app + a Postgres container
-9. `.github/workflows/ci.yml`: install, lint, test, build the image
-10. Deploy to EC2 + RDS, then automate the deploy in Actions
-11. Logging and monitoring (structured logs, CloudWatch, alarms)
-
-Suggested order: 1 → 2 → 3 → 4 → 5 → 6, then the DevOps items in order.
+1. `.github/workflows/ci.yml`: install, lint, test, build the image
+2. Deploy to EC2 + RDS, then automate the deploy in Actions
+3. Logging and monitoring (structured logs, CloudWatch, alarms)
 
 ## Running it locally
 
