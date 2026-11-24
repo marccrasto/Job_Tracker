@@ -1,16 +1,17 @@
 const app = require('./app');
 const { pool } = require('./db');
+const logger = require('./logger');
 
 const PORT = Number(process.env.PORT) || 3000;
 
 const server = app.listen(PORT, () => {
-  console.log(`Job tracker listening on http://localhost:${PORT}`);
+  logger.info({ port: PORT }, 'job tracker listening');
 });
 
 // Docker sends SIGTERM when a container stops (docker stop, a new deploy).
 // Finish in-flight requests and close DB connections instead of dying mid-request.
 function shutdown(signal) {
-  console.log(`${signal} received, shutting down`);
+  logger.info({ signal }, 'shutting down');
   server.close(async () => {
     await pool.end();
     process.exit(0);
