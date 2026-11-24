@@ -55,7 +55,7 @@ jobs:
             "set -e",
             "docker pull \($image)",
             "docker rm -f job-tracker || true",
-            "docker run -d --name job-tracker --restart unless-stopped -p 3000:3000 --env-file /root/jobtracker.env \($image)",
+            "docker run -d --name job-tracker --restart unless-stopped -p 3000:3000 --env-file /root/jobtracker.env --log-driver=awslogs --log-opt awslogs-region=ca-central-1 --log-opt awslogs-group=job-tracker-logs --log-opt awslogs-create-group=true \($image)",
             "sleep 5 && curl -fsS http://localhost:3000/health"
           ]}')
 
