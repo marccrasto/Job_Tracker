@@ -1,6 +1,8 @@
 // Catches any error thrown in a route (Express 5 forwards rejected async
 // handlers here automatically) and turns it into a JSON response.
 
+const logger = require('../logger');
+
 // eslint-disable-next-line no-unused-vars -- Express needs all 4 args to treat this as an error handler
 function errorHandler(err, req, res, next) {
   // 22P02 = Postgres "invalid text representation", e.g. /api/applications/abc
@@ -13,9 +15,9 @@ function errorHandler(err, req, res, next) {
     return res.status(400).json({ error: 'invalid JSON body' });
   }
 
-  // For now this goes to stdout. In the logging stage you'll replace this
-  // with a structured logger so errors are searchable in CloudWatch.
-  console.error(err);
+  // Log under the key "err": pino's built-in serializer turns it into
+  // { type, message, stack }. req.log includes the requestId.
+  (req.log || logger).error({ err }, 'unhandled error');
   res.status(500).json({ error: 'internal server error' });
 }
 

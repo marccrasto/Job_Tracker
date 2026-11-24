@@ -3,6 +3,7 @@
 
 const path = require('path');
 const express = require('express');
+const requestLogger = require('./middleware/requestLogger')
 
 const { router: applicationsRouter } = require('./routes/applications');
 const statsRouter = require('./routes/stats');
@@ -10,6 +11,7 @@ const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
+app.use(requestLogger);
 app.use(express.json());
 
 // Serves the frontend (public/index.html, app.js, styles.css)
